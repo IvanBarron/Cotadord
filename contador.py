@@ -28,18 +28,32 @@ def getMax(digits):
     return maxNum
 
 def getVariables(list):
-    variable = 1
-    while(True):
-        if 2**variable >= len(list):
-            return variable
-        variable = variable + 1
+    variable = len('{0:b}'.format(getMax(list)))
+    return variable
+
+def generateTable(list):
+    i = 0
+    table = []
+    while i < len(list):
+        par = []
+        if(i == len(list) - 1):
+            par.append('{0:b}'.format(list[i]).zfill(getVariables(list)))
+            par.append('{0:b}'.format(list[0]).zfill(getVariables(list)))
+            i = i + 1
+        else:
+            par.append('{0:b}'.format(list[i]).zfill(getVariables(list)))
+            par.append('{0:b}'.format(list[i+1]).zfill(getVariables(list)))
+            i = i + 1
+        table.append(par)
+    return table
 
 def main():
     list = clearArgs(sys.argv)
     verifyRepeated(list)
-    max = getMax(list)
-    print(getVariables(list))
-    print('{0:b}'.format(max))
+    table = generateTable(list)
+    print(table)
+
+
 
 
 
