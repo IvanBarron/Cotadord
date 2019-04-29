@@ -1,6 +1,8 @@
 import sys
 import re
 #from utils import Utils
+VARIABLE =  {1:'a',2:'b',3:'c',4:'d',5:'f',6:'g'}
+
 def clearArgs(args):
     digitos = []
     for i in args:
@@ -47,11 +49,19 @@ def generateTable(list):
         table.append(par)
     return table
 
+def getMiniTerms(table, bit):
+    minTerms = []
+    for register in table:
+        if register[1][bit] == '1':
+            minTerms.append(register[0])
+    return minTerms
+
 def main():
     list = clearArgs(sys.argv)
     verifyRepeated(list)
     table = generateTable(list)
     print(table)
+    print(getMiniTerms(table, 2))
 
 
 
