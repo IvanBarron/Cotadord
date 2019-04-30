@@ -4,7 +4,7 @@ __author__ = 'jonghewk park'
 <Logic Design>
 This is a program that implements Quine-McCluskey Method.
 
-Written By: JongHewk Park 
+Written By: JongHewk Park
 Last Edit : June 2, 2015
 
 Here is the algorithm
@@ -79,7 +79,6 @@ def combinePairs(group, unchecked):
 
     return next_group, unchecked
 
-
 #remove redundant lists in 2d list
 def remove_redundant(group):
     new_group = []
@@ -90,7 +89,6 @@ def remove_redundant(group):
                 new.append(i)
         new_group.append(new)
     return new_group
-
 
 #remove redundant in 1d list
 def remove_redundant_list(list):
@@ -305,9 +303,6 @@ def binary_to_letter(s):
             c = chr(ord(c)+1)
     return out
 
-
-
-#main function
 def main():
     #get the num of variables (bits) as input
     n_var = int(raw_input("Enter the number of variables(bits): "))

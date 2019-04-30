@@ -128,7 +128,7 @@ def remove_redundant_list(list):
             new_list.append(i)
     return new_list
 
-#return True if empty
+#check If groups is empty
 def check_empty(group):
 
     if len(group) == 0:
@@ -143,7 +143,7 @@ def check_empty(group):
             return True
     return False
 
-#find essential prime implicants ( col num of ones = 1)
+#find essential prime implicants
 def find_prime(Chart):
     prime = []
     for col in range(len(Chart[0])):
@@ -167,17 +167,7 @@ def check_all_zero(Chart):
                 return False
     return True
 
-#find max value in list
-def find_max(l):
-    max = -1
-    index = 0
-    for i in range(len(l)):
-        if l[i] > max:
-            max = l[i]
-            index = i
-    return index
-
-#multiply two terms (ex. (p1 + p2)(p1+p4+p5) )..it returns the product
+#multiply two terms (example (p1 + p2)(p1+p4+p5)it returns the product
 def multiplication(list1, list2):
     list_result = []
     #if empty
@@ -331,6 +321,7 @@ def binary_to_letter(s):
             c = chr(ord(c)+1)
     return out
 
+#Clear initial list of args
 def clearArgs(args):
     digitos = []
     for i in args:
@@ -343,24 +334,29 @@ def clearArgs(args):
                 print('El argumento %s no es valido, se excluirá',i)
     return digitos
 
+#Verify if a text is a number
 def isNumber(arg):
     isNumber = bool(re.match('^[0-9]+$',arg))
     return isNumber
 
+#veryfy if there are repeated args
 def verifyRepeated(digits):
     for i in digits:
         if(digits.count(i)>1):
             print('No se pueden utilizar valores repetidos.')
             exit()
 
+#get the highest number of list  
 def getMax(digits):
     maxNum = max(digits)
     return maxNum
 
+#Return number of variables that we need
 def getVariables(list):
     variable = len('{0:b}'.format(getMax(list)))
     return variable
 
+#return the truth table
 def generateTable(list):
     i = 0
     table = []
@@ -377,13 +373,22 @@ def generateTable(list):
         table.append(par)
     return table
 
+#Get index from table of miniterms
+def getIndexMiniTerm(table, bit):
+    minTerms = []
+    for register in table:
+        if register[1][bit] == '1':
+            minTerms.append(table.index(register))
+    return minTerms
+""" Functions to print sum miniterms"""
+#Get list of miniterms
 def getMiniTerms(table, bit):
     minTerms = []
     for register in table:
         if register[1][bit] == '1':
             minTerms.append(register[0])
     return minTerms
-
+#print sum miniterms
 def printMinterms(table,list):
     for i in range(getVariables(list)):
         print("bit ",i)
@@ -403,19 +408,15 @@ def printMinterms(table,list):
                 print("+", end="")
         print("")
 
-def getIndexMiniTerm(table, bit):
-    minTerms = []
-    for register in table:
-        if register[1][bit] == '1':
-            minTerms.append(table.index(register))
-    return minTerms
+
 
 def main():
     numbersList = clearArgs(sys.argv)
     #get the num of variables (bits) as input
-
     n_var = getVariables(numbersList)
+    # generate truth table
     table = generateTable(numbersList)
+    #get number of minitems
     a = list(map(int, getIndexMiniTerm(table,2)))
     group = [[] for x in range(n_var+1)]
 
@@ -474,12 +475,6 @@ def main():
                     s= s+binary_to_letter(unchecked[i])+' + '
         print (s[:(len(s)-3)])
 
-
-
-
-""" verifyRepeated(list)
-    print(table)
-    printMinterms(table,list)"""
 
 if __name__ == '__main__':
     main()
