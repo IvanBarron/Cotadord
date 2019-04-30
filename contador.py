@@ -5,39 +5,6 @@ import itertools
 #from utils import Utils
 VARIABLE =  97
 
-def combinePairs(group, unchecked):
-    #define length
-    l = len(group) -1
-
-    #check list
-    check_list = []
-
-    #create next group
-    next_group = [[] for x in range(l)]
-
-    #go through the groups
-    for i in range(l):
-        #first selected group
-        for elem1 in group[i]:
-            #next selected group
-            for elem2 in group[i+1]:
-                b, pos = compBinary(elem1, elem2)
-                if b == True:
-                    #append the ones used in check list
-                    check_list.append(elem1)
-                    check_list.append(elem2)
-                    #replace the different bit with '-'
-                    new_elem = list(elem1)
-                    new_elem[pos] = '-'
-                    new_elem = "".join(new_elem)
-                    next_group[i].append(new_elem)
-    for i in group:
-        for j in i:
-            if j not in check_list:
-                unchecked.append(j)
-
-    return next_group, unchecked
-
 def check_empty(group):
 
     if len(group) == 0:
@@ -66,7 +33,6 @@ def compBinary(s1,s2):
         return False, None
 
 #compare if the number is same as implicant term
-#s1 should be the term
 def compBinarySame(term,number):
     for i in range(len(term)):
         if term[i] != '-':
@@ -108,6 +74,7 @@ def combinePairs(group, unchecked):
                 unchecked.append(j)
 
     return next_group, unchecked
+
 
 #remove redundant lists in 2d list
 def remove_redundant(group):
@@ -198,6 +165,8 @@ def multiplication(list1, list2):
 
 #petrick's method
 def petrick_method(Chart):
+    print('Chart Petrik')
+    print(Chart)
     #initial P
     P = []
     for col in range(len(Chart[0])):
@@ -229,15 +198,6 @@ def find_minimum_cost(Chart, unchecked):
     essential_prime = find_prime(Chart)
     essential_prime = remove_redundant_list(essential_prime)
 
-    #print out the essential primes
-    if len(essential_prime)>0:
-        s = "\nEssential Prime Implicants :\n"
-        for i in range(len(unchecked)):
-            for j in essential_prime:
-                if j == i:
-                    s= s+binary_to_letter(unchecked[i])+' , '
-        print (s[:(len(s)-3)])
-
     #modifiy the chart to exclude the covered terms
     for i in range(len(essential_prime)):
         for col in range(len(Chart[0])):
@@ -251,14 +211,10 @@ def find_minimum_cost(Chart, unchecked):
     else:
         #petrick's method
         P = petrick_method(Chart)
-
-        #find the one with minimum cost
-        #see "Introduction to Logic Design" - Alan B.Marcovitz Example 4.6 pg 213
         '''
         Although Petrick's method gives the minimum terms that cover all,
         it does not mean that it is the solution for minimum cost!
         '''
-
         P_cost = []
         for prime in P:
             count = 0
@@ -267,7 +223,6 @@ def find_minimum_cost(Chart, unchecked):
                     if j == i:
                         count = count+ cal_efficient(unchecked[i])
             P_cost.append(count)
-
 
         for i in range(len(P_cost)):
             if P_cost[i] == min(P_cost):
@@ -346,7 +301,7 @@ def verifyRepeated(digits):
             print('No se pueden utilizar valores repetidos.')
             exit()
 
-#get the highest number of list  
+#get the highest number of list
 def getMax(digits):
     maxNum = max(digits)
     return maxNum
@@ -408,8 +363,6 @@ def printMinterms(table,list):
                 print("+", end="")
         print("")
 
-
-
 def main():
     numbersList = clearArgs(sys.argv)
     #get the num of variables (bits) as input
@@ -417,63 +370,61 @@ def main():
     # generate truth table
     table = generateTable(numbersList)
     #get number of minitems
-    a = list(map(int, getIndexMiniTerm(table,2)))
-    group = [[] for x in range(n_var+1)]
+    for i in range(n_var):
+        print(' ----Bit {0}----- '.format(i))
+        #print(getMiniTerms(numbersList,i))
+        a = list(map(int, getIndexMiniTerm(table,i)))
+        group = [[] for x in range(n_var+1)]
 
-    for i in range(len(a)):
-        #convert to binary
-        a[i] = bin(a[i])[2:]
-        if len(a[i]) < n_var:
-            #add zeros to fill the n-bits
-            for j in range(n_var - len(a[i])):
-                a[i] = '0'+ a[i]
-        #if incorrect input
-        elif len(a[i]) > n_var:
-            print ('\nError : Choose the correct number of variables(bits)\n')
-            return
-        #count the num of 1
-        index = a[i].count('1')
-        #group by num of 1 separately
-        group[index].append(a[i])
-
-
-    all_group=[]
-    unchecked = []
-    #combine the pairs in series until nothing new can be combined
-    while check_empty(group) == False:
-        all_group.append(group)
-        next_group, unchecked = combinePairs(group,unchecked)
-        group = remove_redundant(next_group)
-
-    s = "\nPrime Implicants :\n"
-    for i in unchecked:
-        s= s + binary_to_letter(i) + " , "
-    print (s[:(len(s)-3)])
-
-    #make the prime implicant chart
-    Chart = [[0 for x in range(len(a))] for x in range(len(unchecked))]
-
-    for i in range(len(a)):
-        for j in range (len(unchecked)):
-            #term is same as number
-            if compBinarySame(unchecked[j], a[i]):
-               Chart[j][i] = 1
-
-    #prime contains the index of the prime implicant terms
-    #prime = remove_redundant_list(find_minimum_cost(Chart))
-    primes = find_minimum_cost(Chart, unchecked)
-    primes = remove_redundant(primes)
+        for i in range(len(a)):
+            #convert to binary
+            a[i] = bin(a[i])[2:]
+            if len(a[i]) < n_var:
+                #add zeros to fill the n-bits
+                for j in range(n_var - len(a[i])):
+                    a[i] = '0'+ a[i]
+            #count the num of 1
+            index = a[i].count('1')
+            #group by num of 1 separately
+            group[index].append(a[i])
 
 
-    print ("\n--  Answers --\n")
+        all_group=[]
+        unchecked = []
+        #combine the pairs in series until nothing new can be combined
+        while check_empty(group) == False:
+            all_group.append(group)
+            next_group, unchecked = combinePairs(group,unchecked)
+            group = remove_redundant(next_group)
 
-    for prime in primes:
-        s=''
-        for i in range(len(unchecked)):
-            for j in prime:
-                if j == i:
-                    s= s+binary_to_letter(unchecked[i])+' + '
+        s = "\nPrime Implicants :\n"
+        for i in unchecked:
+            s= s + binary_to_letter(i) + " , "
         print (s[:(len(s)-3)])
+
+        #make the prime implicant chart
+        Chart = [[0 for x in range(len(a))] for x in range(len(unchecked))]
+        for i in range(len(a)):
+            for j in range (len(unchecked)):
+                #term is same as number
+                if compBinarySame(unchecked[j], a[i]):
+                   Chart[j][i] = 1
+        print(Chart)
+        #prime contains the index of the prime implicant terms
+        #prime = remove_redundant_list(find_minimum_cost(Chart))
+        primes = find_minimum_cost(Chart, unchecked)
+        primes = remove_redundant(primes)
+
+
+        print ("\n--  Equation --\n")
+
+        for prime in primes:
+            s=''
+            for i in range(len(unchecked)):
+                for j in prime:
+                    if j == i:
+                        s= s+binary_to_letter(unchecked[i])+' + '
+            print (s[:(len(s)-3)])
 
 
 if __name__ == '__main__':
